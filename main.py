@@ -45,13 +45,13 @@ class validator(to_write_from):
             Словарь, в котором будут хранится записи из файла
             __error : dictionary
             Словарь, в котором хранится статистика невалидных записей
-            __valid : dictionary
-            Словарь, в котором хранятся валидные записи
+            __valid : list
+            Список словарей, в котором хранятся валидные записи
 
           '''
     __collection: dict
     __error: dict
-    __valid: dict
+    __valid: list
     def __init__(self, path: str) -> None:
         '''
             Инициализирует экземпляр класса validator.
@@ -63,7 +63,7 @@ class validator(to_write_from):
             '''
         to_write_from.__init__(self, path)
         self.__collection = self._data
-        self.__valid = {}
+        self.__valid = []
         self.__error = {
                         'length': 0,
                         'telephone': 0,
@@ -214,7 +214,7 @@ class validator(to_write_from):
         if reference_length == len(number):
             return True
         return False
-    def check_separator(self, element: float) -> bool:
+    def check_separator(self, element: str) -> bool:
         '''
                   Выполняет проверку ,что разделитель вещественного числа ".".
 
@@ -223,7 +223,7 @@ class validator(to_write_from):
 
                   Parameters
                   ----------
-                    element : float
+                    element : str
                       Проверяемое число
 
                   Returns
@@ -262,26 +262,26 @@ class validator(to_write_from):
                     self.check_length(i['snils'], 'snils') == False or
                     self.check_length(i['passport_number'], 'passport_number') == False):
                 self.__error['length'] += 1
-                break
+                continue
             elif self.check_telephone(i['telephone']) == False:
                 self.__error['telephone'] += 1
-                break
+                continue
+            elif self.check_separator(i['height']) == False:
+                self.__error['separator'] += 1
+                continue
             elif self.check_height(i['height']) == False:
                 self.__error['height'] += 1
-                break
+                continue
             elif (self.check_character(i['snils']) == False or
                     self.check_character(i['passport_number']) == False or
                     self.check_character(i['age']) == False):
                 self.__error['character'] += 1
-                break
-            elif self.check_separator(i['height']) == False:
-                self.__error['separator'] += 1
-                break
+                continue
             elif self.check_address(i['address']) == False:
                 self.__error['address'] += 1
-                break
+                continue
             else:
-                self.__valid.update(i)
+                self.__valid.append(i)
 
 
 
@@ -296,4 +296,4 @@ print(B.collection[0])
 # print(B.check_length(B.collection[0]['snils'], 'снилс'))
 # print(B.check_separator(B.collection[0]['age']))
 B.valid_function()
-print(B.valid[0])
+print(B.valid[0:5])
