@@ -86,7 +86,7 @@ class validator(to_write_from):
         '''
         return self.__collection
     @property
-    def valid(self) -> dict:
+    def valid(self) -> list:
         '''
         Получение валидных записей.
 
@@ -236,21 +236,21 @@ class validator(to_write_from):
         return True
     def check_address(self, address: str) -> bool:
         '''
-                  Выполняет проверку формата адреса.
+        Выполняет проверку формата адреса.
 
-                  Если адрес проживания указан не в формате "улица пробел номер дома",
-                  то будет возвращено False.
+        Если адрес проживания указан не в формате "улица пробел номер дома",
+        то будет возвращено False.
 
-                  Parameters
-                  ----------
-                    address : str
-                      Строка с проверяемым адресом
+        Parameters
+        ----------
+        address : str
+        Строка с проверяемым адресом
 
-                  Returns
-                  -------
-                    bool:
-                      Булевый результат проверки на корректность
-                  '''
+        Returns
+        -------
+        bool:
+        Булевый результат проверки на корректность
+        '''
         pattern = "^[А-Яа-я]([А-Яа-я]+\s)+\d{1,4}$"
         if re.match(pattern, address):
             return True
@@ -283,6 +283,21 @@ class validator(to_write_from):
             else:
                 self.__valid.append(i)
 
+    def write_in_new_file(self) -> None:
+        '''
+        Создает новый файл, в который записывает валидные данные.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        None:
+        Не возвращает ничего
+        '''
+        with open('new_28.txt', mode='w', encoding='windows-1251') as f:
+            f.write(json.dumps(self.valid))
+
 
 
 
@@ -297,3 +312,4 @@ print(B.collection[0])
 # print(B.check_separator(B.collection[0]['age']))
 B.valid_function()
 print(B.valid[0:5])
+B.write_in_new_file()
