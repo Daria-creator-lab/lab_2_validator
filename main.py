@@ -63,7 +63,7 @@ class validator(to_write_from):
             '''
         to_write_from.__init__(self, path)
         self.__collection = self._data
-        #self.__valid = open('valid.txt', mode='a+')
+        self.__valid = {}
         self.__error = {
                         'length': 0,
                         'telephone': 0,
@@ -85,8 +85,19 @@ class validator(to_write_from):
             Возвращается словарь с записями.
         '''
         return self.__collection
+    @property
+    def valid(self) -> dict:
+        '''
+        Получение валидных записей.
 
-    def check_length(self, number: str, flag: str) -> bool:
+        Returns
+        -------
+          dict:
+            Возвращается словарь с валидными записями.
+        '''
+        return self.__valid
+
+    def check_length(self, number: str or int, flag: str) -> bool:
         '''
                   Выполняет проверку корректности длины номера/серии паспорта/СНИЛС.
 
@@ -95,8 +106,9 @@ class validator(to_write_from):
 
                   Parameters
                   ----------
-                    number : str
-                      Строка с проверяемым номером/серией паспорта/СНИЛСом
+                    number : str or int
+                      Строка с проверяемым номером.
+                      Или проверяемое число (серия паспорта/СНИЛС)
                     flag : str
                       Строка с видом парметра (номер/серия паспорта/СНИЛС).
 
@@ -106,13 +118,13 @@ class validator(to_write_from):
                       Булевый результат проверки на корректность
                   '''
         reference_length = 0
-        if flag == 'номер':
+        if flag == 'telephone':
             reference_length = 18
-        elif flag == 'паспорт':
+        elif flag == 'passport_number':
             reference_length = 6
-        elif flag == 'снилс':
+        elif flag == 'snils':
             reference_length = 11
-        if reference_length == len(number):
+        if reference_length == len(str(number)):
             return True
         return False
     def check_telephone(self, telephone: str) -> bool:
@@ -135,7 +147,7 @@ class validator(to_write_from):
         if re.match(pattern, telephone):
             return True
         return False
-    def check_height(self, param: float) -> bool:
+    def check_height(self, param: str) -> bool:
         '''
                   Выполняет проверку значений роста.
 
@@ -144,7 +156,7 @@ class validator(to_write_from):
 
                   Parameters
                   ----------
-                    param : float
+                    param : str
                       Строка со значением роста
 
                   Returns
@@ -153,7 +165,7 @@ class validator(to_write_from):
                       Булевый результат проверки на корректность
                   '''
 
-        if param > 2.20:
+        if float(param) > 2.20:
             return False
         return True
     def check_character(self, number: int) -> bool:
@@ -244,7 +256,34 @@ class validator(to_write_from):
             return True
         return False
 
-        
+    def valid_function(self):
+        for i in self.__collection:
+            if (self.check_length(i['telephone'], 'telephone') == False or
+                    self.check_length(i['snils'], 'snils') == False or
+                    self.check_length(i['passport_number'], 'passport_number') == False):
+                self.__error['length'] += 1
+                break
+            elif self.check_telephone(i['telephone']) == False:
+                self.__error['telephone'] += 1
+                break
+            elif self.check_height(i['height']) == False:
+                self.__error['height'] += 1
+                break
+            elif (self.check_character(i['snils']) == False or
+                    self.check_character(i['passport_number']) == False or
+                    self.check_character(i['age']) == False):
+                self.__error['character'] += 1
+                break
+            elif self.check_separator(i['height']) == False:
+                self.__error['separator'] += 1
+                break
+            elif self.check_address(i['address']) == False:
+                self.__error['address'] += 1
+                break
+            else:
+                self.__valid.update(i)
+
+
 
 
 
@@ -255,4 +294,6 @@ B = validator(r'/Users/dary/PycharmProjects/прикладное_програм�
 print(B.collection[0])
 
 # print(B.check_length(B.collection[0]['snils'], 'снилс'))
-print(B.check_separator(B.collection[0]['age']))
+# print(B.check_separator(B.collection[0]['age']))
+B.valid_function()
+print(B.valid[0])
