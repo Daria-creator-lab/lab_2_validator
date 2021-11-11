@@ -70,6 +70,8 @@ class validator(to_write_from):
                         'character': 0,
                         'separator': 0,
                         'address': 0,
+                        'academic_degree': 0,
+                        'worldview': 0
                         }
 
     @property
@@ -226,6 +228,50 @@ class validator(to_write_from):
             return True
         return False
 
+    def check_academic_degree(self, academic_degree: str) -> bool:
+        '''
+        Выполняет проверку academic_degree на корректность.
+
+        Если academic_degree не входит в список "правильных" academic_degree,
+        то будет возвращено False.
+
+        Parameters
+        ----------
+            academic_degree : str
+                Строка с проверяемым academic_degree
+
+        Returns
+        -------
+        bool:
+        Булевый результат проверки на корректность
+        '''
+        correct_academic_degree = ['Бакалавр', 'Магистр', 'Доктор наук', 'Кандидат наук', 'Специалист']
+        if academic_degree in correct_academic_degree:
+            return True
+        return False
+    def check_worldview(self, worldview: str) -> bool:
+        '''
+        Выполняет проверку academic_degree на корректность.
+
+        Если academic_degree не входит в список "правильных" academic_degree,
+        то будет возвращено False.
+
+        Parameters
+        ----------
+            worldview : str
+                Строка с проверяемым academic_degree
+
+        Returns
+        -------
+        bool:
+        Булевый результат проверки на корректность
+        '''
+        correct_worldview = ['Буддизм', 'Конфуцианство', 'Деизм', 'Секулярный гуманизм', 'Агностицизм', 'Иудаизм',
+                             'Атеизм', 'Католицизм', 'Пантеизм']
+        if worldview in correct_worldview:
+            return True
+        return False
+
     def valid_function(self) -> None:
         '''
         Выполняет проверку валидности записей.
@@ -245,6 +291,12 @@ class validator(to_write_from):
                     self.check_length(i['snils'], 'snils') == False or
                     self.check_length(i['passport_number'], 'passport_number') == False):
                 self.__error['length'] += 1
+                continue
+            elif self.check_academic_degree(i['academic_degree']) == False:
+                self.__error['academic_degree'] += 1
+                continue
+            elif self.check_worldview(i['worldview']) == False:
+                self.__error['worldview'] += 1
                 continue
             elif self.check_telephone(i['telephone']) == False:
                  self.__error['telephone'] += 1
@@ -299,14 +351,29 @@ class validator(to_write_from):
         print(json.dumps(self.__error, indent=4))
 
 
+# w_dict = []
+# for i in B.collection:
+#     w_dict.append(i['worldview'])
+# print(w_dict)
+#
+# counts = {}
+# for i in w_dict:
+#     if i not in counts:
+#         counts[i] = 0
+#     counts[i] += 1
+# print(counts)
+
+
 
 B = validator(r'/Users/dary/PycharmProjects/прикладное_программирование_лаба2/28.txt')
 print(B.collection[0])
 
+
 B.valid_function()
 # print(B.valid[0:5])
 B.statistics()
-B.write_in_new_file()
+# B.write_in_new_file()
+
 # parser = argparse.ArgumentParser()
 # parser.add_argument('input', default='input.txt')
 # parser.add_argument('output', default='output.txt')
