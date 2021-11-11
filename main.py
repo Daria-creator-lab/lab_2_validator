@@ -7,49 +7,49 @@ from tqdm import tqdm
 
 class to_write_from:
     '''
-      Объект класса to_write_from читает данные с файла.
+    Объект класса to_write_from читает данные с файла.
 
-      Он нужен для того, чтобы считать и записать данные с/в файл(а).
+    Он нужен для того, чтобы считать и записать данные с/в файл(а).
 
-      Attributes
-      ----------
-        _data : dictionary
-            Словарь, в котором будут хранится записи из файла
-      '''
-    _data: dict
+    Attributes
+    ----------
+    _data : list
+    Список словарей, в котором будут хранится записи из файла
+    '''
+    _data: list
 
     def __init__(self, path: str) -> None:
         '''
-            Инициализирует экземпляр класса to_write_from.
+        Инициализирует экземпляр класса to_write_from.
 
-            Parameters
-            ----------
-              path : str
-                Строковый параметр: путь до открываемого файла
-            '''
+        Parameters
+        ----------
+        path : str
+        Строковый параметр: путь до открываемого файла
+        '''
         self._data = json.load(open(path, encoding='windows-1251'))
 
 #класс для валидатора
 class validator(to_write_from):
     '''
-          Объект класса validator производит валидацию данных.
+    Объект класса validator производит валидацию данных.
 
-          Он нужен для того, чтобы произвести валидацию записей исходного файла,
-          сохранить релевантные записи в новый файл. Также собирает статистику
-          по числу невалидных записей и типам ошибок.
-          Данный класс validator отнаследован от класса to_write_from.
+    Он нужен для того, чтобы произвести валидацию записей исходного файла,
+    сохранить релевантные записи в новый файл. Также собирает статистику
+    по числу невалидных записей и типам ошибок.
+    Данный класс validator отнаследован от класса to_write_from.
 
-          Attributes
-          ----------
-            __collection : dictionary
-            Словарь, в котором будут хранится записи из файла
-            __error : dictionary
-            Словарь, в котором хранится статистика невалидных записей
-            __valid : list
-            Список словарей, в котором хранятся валидные записи
+    Attributes
+    ----------
+    __collection : dictionary
+    Список словарей, в котором будут хранится записи из файла
+    __error : dictionary
+    Словарь, в котором хранится статистика невалидных записей
+    __valid : list
+    Список словарей, в котором хранятся валидные записи
 
-          '''
-    __collection: dict
+    '''
+    __collection: list
     __error: dict
     __valid: list
     def __init__(self, path: str) -> None:
@@ -75,14 +75,14 @@ class validator(to_write_from):
                         }
 
     @property
-    def collection(self) -> dict:
+    def collection(self) -> list:
         '''
         Коллекция экземпляров класса записей в качества свойства класса validator.
 
         Returns
         -------
-          dict:
-            Возвращается словарь с записями.
+          list:
+            Возвращается список словарей с записями.
         '''
         return self.__collection
     @property
@@ -186,34 +186,6 @@ class validator(to_write_from):
                       Булевый результат проверки на корректность
                   '''
         return str(number).isdigit()
-    def check_inappropriate(self, information: str, flag: str) -> bool:## todo
-        '''
-                  Проверяет корректность данных в графе профессия, звание, религия.
-
-                  Если в графе профессия, звание, религия указаны неподходящие данные,
-                  то будет возвращено False.
-
-                  Parameters
-                  ----------
-                    information : str
-                      Строка с проверяемым параметром
-                      flag : str
-                      Строка с видом парметра (профессия/звание/религия)
-
-                  Returns
-                  -------
-                    bool:
-                      Булевый результат проверки на корректность
-                  '''
-        if flag == 'профессия':
-            information = 18
-        elif flag == 'звание':
-            information = 6
-        elif flag == 'религия':
-            information = 11
-        if reference_length == len(number):
-            return True
-        return False
     def check_separator(self, element: str) -> bool:
         '''
                   Выполняет проверку ,что разделитель вещественного числа ".".
@@ -256,16 +228,29 @@ class validator(to_write_from):
             return True
         return False
 
-    def valid_function(self):
-        for i in self.__collection:
+    def valid_function(self) -> None:
+        '''
+        Выполняет проверку валидности записей.
+
+        Если запись валидна,то записывается в __valid.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        None:
+        Ничего не возвращает
+        '''
+        for i in self.__collection and tqdm(self.__collection, colour='green'):
             if (self.check_length(i['telephone'], 'telephone') == False or
                     self.check_length(i['snils'], 'snils') == False or
                     self.check_length(i['passport_number'], 'passport_number') == False):
                 self.__error['length'] += 1
                 continue
             elif self.check_telephone(i['telephone']) == False:
-                self.__error['telephone'] += 1
-                continue
+                 self.__error['telephone'] += 1
+                 continue
             elif self.check_separator(i['height']) == False:
                 self.__error['separator'] += 1
                 continue
@@ -282,6 +267,7 @@ class validator(to_write_from):
                 continue
             else:
                 self.__valid.append(i)
+            # progressbar.update(5)
 
     def write_in_new_file(self) -> None:
         '''
@@ -301,10 +287,6 @@ class validator(to_write_from):
 
 
 
-
-# A = to_write_from(r'/Users/dary/PycharmProjects/прикладное_программирование_лаба2/28.txt')
-# print(A._data[0:2])
-
 B = validator(r'/Users/dary/PycharmProjects/прикладное_программирование_лаба2/28.txt')
 print(B.collection[0])
 
@@ -312,4 +294,4 @@ print(B.collection[0])
 # print(B.check_separator(B.collection[0]['age']))
 B.valid_function()
 print(B.valid[0:5])
-B.write_in_new_file()
+# B.write_in_new_file()
