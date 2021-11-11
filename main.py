@@ -1,5 +1,5 @@
 # 28 вариант
-import os
+import argparse
 import re
 import json
 import time
@@ -13,8 +13,8 @@ class to_write_from:
 
     Attributes
     ----------
-    _data : list
-    Список словарей, в котором будут хранится записи из файла
+        _data : list
+            Список словарей, в котором будут хранится записи из файла
     '''
     _data: list
 
@@ -24,8 +24,8 @@ class to_write_from:
 
         Parameters
         ----------
-        path : str
-        Строковый параметр: путь до открываемого файла
+            path : str
+                Строковый параметр: путь до открываемого файла
         '''
         self._data = json.load(open(path, encoding='windows-1251'))
 
@@ -41,26 +41,25 @@ class validator(to_write_from):
 
     Attributes
     ----------
-    __collection : dictionary
-    Список словарей, в котором будут хранится записи из файла
-    __error : dictionary
-    Словарь, в котором хранится статистика невалидных записей
-    __valid : list
-    Список словарей, в котором хранятся валидные записи
-
+        __collection : dictionary
+            Список словарей, в котором будут хранится записи из файла
+        __error : dictionary
+            Словарь, в котором хранится статистика невалидных записей
+        __valid : list
+            Список словарей, в котором хранятся валидные записи
     '''
     __collection: list
     __error: dict
     __valid: list
     def __init__(self, path: str) -> None:
         '''
-            Инициализирует экземпляр класса validator.
+        Инициализирует экземпляр класса validator.
 
-            Parameters
-            ----------
-              path : str
+        Parameters
+        ----------
+            path : str
                 Строковый параметр: путь до открываемого файла
-            '''
+        '''
         to_write_from.__init__(self, path)
         self.__collection = self._data
         self.__valid = []
@@ -69,7 +68,6 @@ class validator(to_write_from):
                         'telephone': 0,
                         'height': 0,
                         'character': 0,
-                        'inappropriate': 0,
                         'separator': 0,
                         'address': 0,
                         }
@@ -99,24 +97,24 @@ class validator(to_write_from):
 
     def check_length(self, number: str or int, flag: str) -> bool:
         '''
-                  Выполняет проверку корректности длины номера/серии паспорта/СНИЛС.
+        Выполняет проверку корректности длины номера/серии паспорта/СНИЛС.
 
-                  Если длина номера/серии паспорта/СНИЛС не соответсвует формату,
-                  то будет возвращено False.
+        Если длина номера/серии паспорта/СНИЛС не соответсвует формату,
+        то будет возвращено False.
 
-                  Parameters
-                  ----------
-                    number : str or int
-                      Строка с проверяемым номером.
-                      Или проверяемое число (серия паспорта/СНИЛС)
-                    flag : str
-                      Строка с видом парметра (номер/серия паспорта/СНИЛС).
+        Parameters
+        ----------
+            number : str or int
+                Строка с проверяемым номером.
+                Или проверяемое число (серия паспорта/СНИЛС)
+            flag : str
+                Строка с видом парметра (номер/серия паспорта/СНИЛС).
 
-                  Returns
-                  -------
-                    bool:
-                      Булевый результат проверки на корректность
-                  '''
+        Returns
+        -------
+            bool:
+                Булевый результат проверки на корректность
+        '''
         reference_length = 0
         if flag == 'telephone':
             reference_length = 18
@@ -149,60 +147,60 @@ class validator(to_write_from):
         return False
     def check_height(self, param: str) -> bool:
         '''
-                  Выполняет проверку значений роста.
+        Выполняет проверку значений роста.
 
-                  Если физические параметры роста выходят за пределы разумного,
-                  то будет возвращено False.
+        Если физические параметры роста выходят за пределы разумного,
+        то будет возвращено False.
 
-                  Parameters
-                  ----------
-                    param : str
-                      Строка со значением роста
+        Parameters
+        ----------
+            param : str
+                Строка со значением роста
 
-                  Returns
-                  -------
-                    bool:
-                      Булевый результат проверки на корректность
-                  '''
+        Returns
+        -------
+        bool:
+            Булевый результат проверки на корректность
+        '''
 
         if float(param) > 2.20:
             return False
         return True
     def check_character(self, number: int) -> bool:
         '''
-                  Проверяет наличие символа в числовых данных.
+        Проверяет наличие символа в числовых данных.
 
-                  Если в числовых данных встречается символ,
-                  то будет возвращено False.
+        Если в числовых данных встречается символ,
+        то будет возвращено False.
 
-                  Parameters
-                  ----------
-                    number : int
-                      Проверяемые числовые данные
+        Parameters
+        ----------
+            number : int
+                Проверяемые числовые данные
 
-                  Returns
-                  -------
-                    bool:
-                      Булевый результат проверки на корректность
-                  '''
+        Returns
+        -------
+            bool:
+                Булевый результат проверки на корректность
+        '''
         return str(number).isdigit()
     def check_separator(self, element: str) -> bool:
         '''
-                  Выполняет проверку ,что разделитель вещественного числа ".".
+        Выполняет проверку ,что разделитель вещественного числа ".".
 
-                  Если разделитель вещественного числа отличен от ".",
-                  то будет возвращено False.
+        Если разделитель вещественного числа отличен от ".",
+        то будет возвращено False.
 
-                  Parameters
-                  ----------
-                    element : str
-                      Проверяемое число
+        Parameters
+        ----------
+            element : str
+                Проверяемое число
 
-                  Returns
-                  -------
-                    bool:
-                      Булевый результат проверки на корректность
-                  '''
+        Returns
+        -------
+            bool:
+                Булевый результат проверки на корректность
+        '''
         if re.match(r'^-?\d+(?:\.\d+)$', str(element)) is None:
             return False
         return True
@@ -215,13 +213,13 @@ class validator(to_write_from):
 
         Parameters
         ----------
-        address : str
-        Строка с проверяемым адресом
+            address : str
+                Строка с проверяемым адресом
 
         Returns
         -------
-        bool:
-        Булевый результат проверки на корректность
+            bool:
+                Булевый результат проверки на корректность
         '''
         pattern = "^[А-Яа-я]([А-Яа-я]+\s)+\d{1,4}$"
         if re.match(pattern, address):
@@ -239,8 +237,8 @@ class validator(to_write_from):
 
         Returns
         -------
-        None:
-        Ничего не возвращает
+            None:
+                Ничего не возвращает
         '''
         for i in self.__collection and tqdm(self.__collection, colour='green'):
             if (self.check_length(i['telephone'], 'telephone') == False or
@@ -267,7 +265,6 @@ class validator(to_write_from):
                 continue
             else:
                 self.__valid.append(i)
-            # progressbar.update(5)
 
     def write_in_new_file(self) -> None:
         '''
@@ -278,20 +275,43 @@ class validator(to_write_from):
 
         Returns
         -------
-        None:
-        Не возвращает ничего
+            None:
+                Не возвращает ничего
         '''
         with open('new_28.txt', mode='w', encoding='windows-1251') as f:
             f.write(json.dumps(self.valid))
 
+    def statistics(self) -> None:
+        '''
+            Выводит статистику обработанных записей.
+
+            Parameters
+            ----------
+
+            Returns
+            -------
+                None:
+                    Не возвращает ничего
+            '''
+        print('Число валидных записей {}'. format(len(self.__valid)))
+        print('Число невалидных записей {}'.format(len(self.__collection) - len(self.__valid)))
+        print('Ошибки')
+        print(json.dumps(self.__error, indent=4))
 
 
 
 B = validator(r'/Users/dary/PycharmProjects/прикладное_программирование_лаба2/28.txt')
 print(B.collection[0])
 
-# print(B.check_length(B.collection[0]['snils'], 'снилс'))
-# print(B.check_separator(B.collection[0]['age']))
 B.valid_function()
-print(B.valid[0:5])
-# B.write_in_new_file()
+# print(B.valid[0:5])
+B.statistics()
+B.write_in_new_file()
+# parser = argparse.ArgumentParser()
+# parser.add_argument('input', default='input.txt')
+# parser.add_argument('output', default='output.txt')
+# namespace = parser.parse_args()
+# inputPath = namespace.input
+# outputPath = namespace.output
+# print(inputPath)
+# print(outputPath)
